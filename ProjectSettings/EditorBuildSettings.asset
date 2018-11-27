@@ -8,4 +8,13 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/StartScreen.unity
+    guid: 2303c3b855e799e44a90cae7447eb11d
+  - enabled: 1
+    path: Assets/Scenes/Segway2Game.unity
+    guid: 7b3718246e4a5a44caad34694dee1ef3
+  - enabled: 1
+    path: Assets/Scenes/Main.unity
+    guid: 0ee5b646632570a4d9001d4015f2cb4a
   m_configObjects: {}
