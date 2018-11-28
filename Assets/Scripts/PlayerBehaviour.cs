@@ -8,6 +8,13 @@ using UnityStandardAssets.Characters.FirstPerson;
 
 public class PlayerBehaviour : MonoBehaviour
 {
+    public string curPassword = "12345";
+    public string input;
+    public bool onTrigger;
+    public bool keypadScreen;
+    public GameObject door;
+    public bool doorOpen;
+
     [Header("Health Settings")]
     public GameObject healthSlider;
     public float health = 100;
@@ -133,7 +140,20 @@ public class PlayerBehaviour : MonoBehaviour
             // set quit button
             Button quitBtn = finishedGameUI.gameObject.transform.Find("QuitBtn").GetComponent<Button>();
             quitBtn.onClick.AddListener(this.gameObject.GetComponent<MenuInGame>().QuitGame);
-        } 
+        }
+
+        // makes mouse visible when near keypad
+        if (onTrigger == true)
+        {
+            Cursor.visible = true;
+        }
+
+        if (input == curPassword)
+        {
+            doorOpen = true;
+            door = GameObject.Find("Door");
+            Destroy(door);
+        }
     }
 
     public IEnumerator RemoveBaterryCharge(float value, float time)
@@ -203,9 +223,11 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (collider.gameObject.transform.tag == "Keypad")
         {
-            Debug.Log("You Found a Page: " + collider.gameObject.name + ", Press 'E' to pickup");
-            pickUpUI.SetActive(true);      
+            onTrigger = true;
+           Cursor.visible = true;
+
         }
+        
     }
 
     // page system - pickup system
@@ -242,8 +264,84 @@ public class PlayerBehaviour : MonoBehaviour
             }          
         }
 
+        if (collider.gameObject.transform.tag == "Keypad")
+        {
+            onTrigger = false;
+            keypadScreen = false;
+            input = "";
+        }
+
         // disable UI
         if (collider.gameObject.transform.tag == "Page")
             pickUpUI.SetActive(false);
+    }
+
+    void OnGUI()
+    {
+        if (!doorOpen)
+        {
+            if (onTrigger)
+            {
+                GUI.Box(new Rect(0, 0, 200, 25), "Press 'E' to open keypad");
+
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    keypadScreen = true;
+                    //onTrigger = false;
+                }
+            }
+
+            if (keypadScreen)
+            {
+                GUI.Box(new Rect(0, 0, 320, 455), "");
+                GUI.Box(new Rect(5, 5, 310, 25), input);
+
+                if (GUI.Button(new Rect(5, 35, 100, 100), "1"))
+                {
+                    input = input + "1";
+                }
+
+                if (GUI.Button(new Rect(110, 35, 100, 100), "2"))
+                {
+                    input = input + "2";
+                }
+
+                if (GUI.Button(new Rect(215, 35, 100, 100), "3"))
+                {
+                    input = input + "3";
+                }
+
+                if (GUI.Button(new Rect(5, 140, 100, 100), "4"))
+                {
+                    input = input + "4";
+                }
+
+                if (GUI.Button(new Rect(110, 140, 100, 100), "5"))
+                {
+                    input = input + "5";
+                }
+
+                if (GUI.Button(new Rect(215, 140, 100, 100), "6"))
+                {
+                    input = input + "6";
+                }
+
+                if (GUI.Button(new Rect(5, 245, 100, 100), "7"))
+                {
+                    input = input + "7";
+                }
+
+                if (GUI.Button(new Rect(110, 245, 100, 100), "8"))
+                {
+                    input = input + "8";
+                }
+
+                if (GUI.Button(new Rect(215, 245, 100, 100), "9"))
+                {
+                    input = input + "9";
+                }
+
+            }
+        }
     }
 }
