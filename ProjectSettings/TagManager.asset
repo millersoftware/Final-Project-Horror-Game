@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Building
   - Battery
+  - Keypad
   layers:
   - Default
   - TransparentFX

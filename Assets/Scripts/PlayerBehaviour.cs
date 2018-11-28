@@ -201,7 +201,7 @@ public class PlayerBehaviour : MonoBehaviour
             }            
         }
 
-        if (collider.gameObject.transform.tag == "Page")
+        if (collider.gameObject.transform.tag == "Keypad")
         {
             Debug.Log("You Found a Page: " + collider.gameObject.name + ", Press 'E' to pickup");
             pickUpUI.SetActive(true);      
