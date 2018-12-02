@@ -15,6 +15,9 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject door;
     public bool doorOpen;
 
+    public GameObject true_scarecrow;
+    public bool isForest = false;
+
     [Header("Health Settings")]
     public GameObject healthSlider;
     public float health = 100;
@@ -60,6 +63,7 @@ public class PlayerBehaviour : MonoBehaviour
 
         // start consume flashlight battery
         StartCoroutine(RemoveBaterryCharge(removeBatteryValue, secondToRemoveBaterry));
+        StartCoroutine(ScarecrowAttack(10));
     }
 	
 	void Update ()
@@ -156,6 +160,50 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+   /// <summary>
+   /// ///////////////////////////////////////////////////////
+   /// </summary>
+   /// <param name="time"></param>
+   /// <returns></returns>
+   
+    public IEnumerator ScarecrowAttack(float time)
+    {
+      
+        while (true)
+        {
+            
+            yield return new WaitForSeconds(time);
+
+            if(isForest == true)
+            {
+                float temp;
+                //Getting Position to Spawn Monster
+                //Finding where player is looking
+                Vector3 playerPos = this.transform.position;
+                playerPos.y = 0.0f;
+                Vector3 playerDirection = this.transform.forward;
+                Quaternion playerRotation = true_scarecrow.transform.rotation;
+                float spawnDistance = 50;
+                Vector3 spawnPos = playerPos + playerDirection * spawnDistance;
+                //Spawning
+                GameObject spawned = Instantiate(true_scarecrow, spawnPos, playerRotation);
+
+                //One Time Triggers
+                temp = Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity;
+                Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 0.0f;
+                this.GetComponent<AudioSource>().PlayOneShot(cameraNoise);
+                //Go away
+                
+                 yield return new WaitForSeconds(5);
+                 Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = temp;
+                 Destroy(spawned);
+                
+            }
+        }
+        
+    }
+
+
     public IEnumerator RemoveBaterryCharge(float value, float time)
     {
         while (true)
@@ -251,7 +299,7 @@ public class PlayerBehaviour : MonoBehaviour
             }
         }
     }
-
+    
     private void OnTriggerExit(Collider collider)
     {
         // remove noise sound
@@ -264,7 +312,12 @@ public class PlayerBehaviour : MonoBehaviour
             }          
         }
 
-        if (collider.gameObject.transform.tag == "Keypad")
+        if (collider.gameObject.transform.tag == "ForestTransition")
+        {
+            isForest = true;
+
+        }
+            if (collider.gameObject.transform.tag == "Keypad")
         {
             onTrigger = false;
             keypadScreen = false;
