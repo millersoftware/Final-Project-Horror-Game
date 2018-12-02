@@ -8,12 +8,20 @@ using UnityStandardAssets.Characters.FirstPerson;
 
 public class PlayerBehaviour : MonoBehaviour
 {
+    public string curPassword = "12345";
+    public string input;
+    public bool onTrigger;
+    public bool keypadScreen;
+    public GameObject door;
+    public bool doorOpen;
+
     [Header("Health Settings")]
     public GameObject healthSlider;
     public float health = 100;
     public float healthMax = 100;
     public float healValue = 5;
     public float secondToHeal = 10;
+    private bool inEnemyArea = false;
 
     [Header("Flashlight Battery Settings")]
     public GameObject Flashlight;
@@ -24,21 +32,17 @@ public class PlayerBehaviour : MonoBehaviour
     public float secondToRemoveBaterry = 5f;
 
     [Header("Audio Settings")]
-    public AudioClip slenderNoise;
-    public AudioClip cameraNoise;
+    public AudioClip Noise;
+    public AudioClip scarecrowNoise;
 
-    [Header("Page System Settings")]
-    public List<GameObject> pages = new List<GameObject>();
-    public int collectedPages;
 
     [Header("UI Settings")]
     public GameObject inGameMenuUI;
     public GameObject pickUpUI;
     public GameObject finishedGameUI;
-    public GameObject pagesCount;
     public bool paused;
 
-	void Start ()
+    void Start()
     {
         // set initial health values
         health = healthMax;
@@ -54,26 +58,23 @@ public class PlayerBehaviour : MonoBehaviour
         // start consume flashlight battery
         StartCoroutine(RemoveBaterryCharge(removeBatteryValue, secondToRemoveBaterry));
     }
-	
-	void Update ()
+
+    void Update()
     {
+        if(inEnemyArea == true)
+        {
+            health -= 1;
+        }
         // update player health slider
         healthSlider.GetComponent<Slider>().value = health;
 
         // update baterry slider
         batterySlider.GetComponent<Slider>().value = battery;
 
-        // if health is low than 20%
-        if(health / healthMax * 100 <= 20 && health / healthMax * 100 != 0)
-        {
-            Debug.Log("You are dying.");
-            this.GetComponent<AudioSource>().PlayOneShot(slenderNoise);
-        }
-
         // if health is low than 0
         if (health / healthMax * 100 <= 0)
         {
-            Debug.Log("You are dead.");
+            SceneManager.LoadScene("GameOverScreen");
             health = 0.0f;
         }
 
@@ -95,7 +96,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (battery / batteryMax * 100 <= 10)
         {
             Debug.Log("You will be out of light.");
-            Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 1.35f;           
+            Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 1.35f;
         }
 
         // if battery out%
@@ -106,8 +107,6 @@ public class PlayerBehaviour : MonoBehaviour
             Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 0.0f;
         }
 
-        // page system
-        pagesCount.GetComponent<Text>().text = "Collected Pages: " + collectedPages + "/8";
 
         //animations
         if (Input.GetKey(KeyCode.LeftShift))
@@ -115,25 +114,19 @@ public class PlayerBehaviour : MonoBehaviour
         else
             this.gameObject.GetComponent<Animation>().CrossFade("Idle", 1);
 
-        // collected all pages
-        if (collectedPages >= 8)
+
+        // makes mouse visible when near keypad
+        if (onTrigger == true)
         {
-            Debug.Log("You finished the game, congratulations...");
             Cursor.visible = true;
+        }
 
-            // disable first person controller and show finished game UI
-            this.gameObject.GetComponent<FirstPersonController>().enabled = false;
-            inGameMenuUI.SetActive(false);
-            finishedGameUI.SetActive(true);       
-
-            // set play again button
-            Button playAgainBtn = finishedGameUI.gameObject.transform.Find("PlayAgainBtn").GetComponent<Button>();
-            playAgainBtn.onClick.AddListener(this.gameObject.GetComponent<MenuInGame>().PlayAgain);
-
-            // set quit button
-            Button quitBtn = finishedGameUI.gameObject.transform.Find("QuitBtn").GetComponent<Button>();
-            quitBtn.onClick.AddListener(this.gameObject.GetComponent<MenuInGame>().QuitGame);
-        } 
+        if (input == curPassword)
+        {
+            doorOpen = true;
+            door = GameObject.Find("Door");
+            Destroy(door);
+        }
     }
 
     public IEnumerator RemoveBaterryCharge(float value, float time)
@@ -163,11 +156,7 @@ public class PlayerBehaviour : MonoBehaviour
                 health -= value;
             else
             {
-                Debug.Log("You're dead");
-                paused = true;
-                inGameMenuUI.SetActive(true);
-                inGameMenuUI.transform.Find("ContinueBtn").gameObject.GetComponent<Button>().interactable = false;
-                inGameMenuUI.transform.Find("PlayAgainBtn").gameObject.GetComponent<Button>().interactable = true;
+                SceneManager.LoadScene("GameOverScreen");
             }
         }
     }
@@ -188,62 +177,119 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-    // page system - show UI
+  
     private void OnTriggerEnter(Collider collider)
     {
         // start noise when reach slender
-        if (collider.gameObject.transform.tag == "Slender")
+        if (collider.gameObject.transform.tag == "Scarecrow")
         {
             if (health > 0 && paused == false)
             {
-                this.GetComponent<AudioSource>().PlayOneShot(cameraNoise);
-                this.GetComponent<AudioSource>().loop = true;
-            }            
-        }
-
-        if (collider.gameObject.transform.tag == "Page")
-        {
-            Debug.Log("You Found a Page: " + collider.gameObject.name + ", Press 'E' to pickup");
-            pickUpUI.SetActive(true);      
-        }
-    }
-
-    // page system - pickup system
-    private void OnTriggerStay(Collider collider)
-    {
-        if (collider.gameObject.transform.tag == "Page")
-        {       
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                Debug.Log("You get this page: " + collider.gameObject.name);
-
-                // disable UI
-                pickUpUI.SetActive(false);
-
-                // add page to list
-                pages.Add(collider.gameObject);
-                collectedPages ++;
-
-                // disable game object
-                collider.gameObject.SetActive(false);
+                this.GetComponent<AudioSource>().PlayOneShot(scarecrowNoise);
+                inEnemyArea = true;
+                
             }
         }
-    }
 
+        if (collider.gameObject.transform.tag == "Keypad")
+        {
+            onTrigger = true;
+            Cursor.visible = true;
+
+        }
+
+    }
     private void OnTriggerExit(Collider collider)
     {
         // remove noise sound
-        if (collider.gameObject.transform.tag == "Slender")
+        if (collider.gameObject.transform.tag == "Scarecrow")
         {
             if (health > 0 && paused == false)
             {
                 this.GetComponent<AudioSource>().clip = null;
                 this.GetComponent<AudioSource>().loop = false;
-            }          
+                inEnemyArea = false;
+            }
+        }
+
+        if (collider.gameObject.transform.tag == "Keypad")
+        {
+            onTrigger = false;
+            keypadScreen = false;
+            input = "";
         }
 
         // disable UI
         if (collider.gameObject.transform.tag == "Page")
             pickUpUI.SetActive(false);
+    }
+
+    void OnGUI()
+    {
+        if (!doorOpen)
+        {
+            if (onTrigger)
+            {
+                GUI.Box(new Rect(0, 0, 200, 25), "Press 'E' to open keypad");
+
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    keypadScreen = true;
+                    //onTrigger = false;
+                }
+            }
+
+            if (keypadScreen)
+            {
+                GUI.Box(new Rect(0, 0, 320, 455), "");
+                GUI.Box(new Rect(5, 5, 310, 25), input);
+
+                if (GUI.Button(new Rect(5, 35, 100, 100), "1"))
+                {
+                    input = input + "1";
+                }
+
+                if (GUI.Button(new Rect(110, 35, 100, 100), "2"))
+                {
+                    input = input + "2";
+                }
+
+                if (GUI.Button(new Rect(215, 35, 100, 100), "3"))
+                {
+                    input = input + "3";
+                }
+
+                if (GUI.Button(new Rect(5, 140, 100, 100), "4"))
+                {
+                    input = input + "4";
+                }
+
+                if (GUI.Button(new Rect(110, 140, 100, 100), "5"))
+                {
+                    input = input + "5";
+                }
+
+                if (GUI.Button(new Rect(215, 140, 100, 100), "6"))
+                {
+                    input = input + "6";
+                }
+
+                if (GUI.Button(new Rect(5, 245, 100, 100), "7"))
+                {
+                    input = input + "7";
+                }
+
+                if (GUI.Button(new Rect(110, 245, 100, 100), "8"))
+                {
+                    input = input + "8";
+                }
+
+                if (GUI.Button(new Rect(215, 245, 100, 100), "9"))
+                {
+                    input = input + "9";
+                }
+
+            }
+        }
     }
 }

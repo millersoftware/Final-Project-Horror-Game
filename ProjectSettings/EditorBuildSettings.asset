@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Segway2Game.unity
     guid: 7b3718246e4a5a44caad34694dee1ef3
   - enabled: 1
-    path: Assets/Scenes/Main.unity
+    path: Assets/Scenes/Old_Main.unity
     guid: 0ee5b646632570a4d9001d4015f2cb4a
+  - enabled: 1
+    path: Assets/Scenes/GameOverScreen.unity
+    guid: c4ff4076852e9df42a31e0ed96c247f5
   m_configObjects: {}
