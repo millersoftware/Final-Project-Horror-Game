@@ -14,6 +14,7 @@ public class PlayerBehaviour : MonoBehaviour
     public bool keypadScreen;
     public GameObject door;
     public bool doorOpen;
+    public GameObject lightJumpScare;
 
     [Header("Health Settings")]
     public GameObject healthSlider;
@@ -190,7 +191,13 @@ public class PlayerBehaviour : MonoBehaviour
                 
             }
         }
-
+        if(collider.gameObject.transform.tag == "JumpScare")
+        {
+            this.GetComponent<AudioSource>().PlayOneShot(Noise);
+            lightJumpScare.transform.Find("Area Light 1").gameObject.GetComponent<Light>().intensity = 0.0f;
+            lightJumpScare.transform.Find("Area Light 2").gameObject.GetComponent<Light>().intensity = 0.0f;
+           
+        }
         if (collider.gameObject.transform.tag == "Keypad")
         {
             onTrigger = true;
