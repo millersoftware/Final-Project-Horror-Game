@@ -83,7 +83,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (battery / batteryMax * 100 <= 50)
         {
             Debug.Log("Flashlight is running out of battery.");
-            Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 2.85f;
+            Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 6.0f;
         }
 
         // if battery is low 25%
