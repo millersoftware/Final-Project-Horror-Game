@@ -9,6 +9,7 @@ TagManager:
   - Keypad
   - Scarecrow
   - JumpScare
+  - Zombie
   layers:
   - Default
   - TransparentFX

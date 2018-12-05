@@ -34,7 +34,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     [Header("Audio Settings")]
     public AudioClip Noise;
-    public AudioClip scarecrowNoise;
+    public AudioClip zombieNoise;
 
 
     [Header("UI Settings")]
@@ -182,12 +182,13 @@ public class PlayerBehaviour : MonoBehaviour
     private void OnTriggerEnter(Collider collider)
     {
         // start noise when reach slender
-        if (collider.gameObject.transform.tag == "Scarecrow")
+        if (collider.gameObject.transform.tag == "Zombie")
         {
             if (health > 0 && paused == false)
             {
-                this.GetComponent<AudioSource>().PlayOneShot(scarecrowNoise);
+                this.GetComponent<AudioSource>().PlayOneShot(zombieNoise);
                 inEnemyArea = true;
+                collider.transform.GetChild(0).GetComponent<Animator>().SetTrigger("attack");
                 
             }
         }
@@ -209,7 +210,7 @@ public class PlayerBehaviour : MonoBehaviour
     private void OnTriggerExit(Collider collider)
     {
         // remove noise sound
-        if (collider.gameObject.transform.tag == "Scarecrow")
+        if (collider.gameObject.transform.tag == "Zombie")
         {
             if (health > 0 && paused == false)
             {
