@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityStandardAssets.Characters.FirstPerson;
+using Pathfinding;
 
 public class PlayerBehaviour : MonoBehaviour
 {
@@ -15,6 +16,12 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject door;
     public bool doorOpen;
     public GameObject lightJumpScare;
+
+    public GameObject zombie;
+
+    //Crawler Information
+    public GameObject crawlerAI;
+    public GameObject crawler;
 
     [Header("Health Settings")]
     public GameObject healthSlider;
@@ -62,10 +69,12 @@ public class PlayerBehaviour : MonoBehaviour
 
     void Update()
     {
-        if(inEnemyArea == true)
+        
+        if (inEnemyArea == true)
         {
-            health -= 1;
+            health -= 0.1f;
         }
+
         // update player health slider
         healthSlider.GetComponent<Slider>().value = health;
 
@@ -82,21 +91,18 @@ public class PlayerBehaviour : MonoBehaviour
         // if battery is low 50%
         if (battery / batteryMax * 100 <= 50)
         {
-            Debug.Log("Flashlight is running out of battery.");
             Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 6.0f;
         }
 
         // if battery is low 25%
         if (battery / batteryMax * 100 <= 25)
         {
-            Debug.Log("Flashlight is almost without battery.");
             Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 2.0f;
         }
 
         // if battery is low 10%
         if (battery / batteryMax * 100 <= 10)
         {
-            Debug.Log("You will be out of light.");
             Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 1.35f;
         }
 
@@ -104,7 +110,6 @@ public class PlayerBehaviour : MonoBehaviour
         if (battery / batteryMax * 100 <= 0)
         {
             battery = 0.00f;
-            Debug.Log("The flashlight battery is out and you are out of the light.");
             Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 0.0f;
         }
 
@@ -177,28 +182,43 @@ public class PlayerBehaviour : MonoBehaviour
                 health = healthMax;
         }
     }
+                                                             
+    public IEnumerator waiter()
+    {
+        yield return new WaitForSeconds(10);
+        crawlerAI.GetComponent<Patrol>().enabled = true;
+        crawlerAI.GetComponent<AIDestinationSetter>().enabled = false;
+        crawlerAI.GetComponent<AIPath>().maxSpeed = 8;
+        crawler.GetComponent<Animator>().SetBool("Aware", false);
+    }
 
-  
+
     private void OnTriggerEnter(Collider collider)
     {
-        // start noise when reach slender
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (collider.gameObject.transform.tag == "Zombie")
         {
             if (health > 0 && paused == false)
             {
                 this.GetComponent<AudioSource>().PlayOneShot(zombieNoise);
                 inEnemyArea = true;
-                collider.transform.GetChild(0).GetComponent<Animator>().SetTrigger("attack");
-                
+
+                zombie.GetComponent<Animator>().SetBool("Attack", true);
+                zombie.GetComponent<Animator>().SetBool("Walk", false);
+
             }
         }
-        if(collider.gameObject.transform.tag == "JumpScare")
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (collider.gameObject.transform.tag == "JumpScare")
         {
             this.GetComponent<AudioSource>().PlayOneShot(Noise);
             lightJumpScare.transform.Find("Area Light 1").gameObject.GetComponent<Light>().intensity = 0.0f;
             lightJumpScare.transform.Find("Area Light 2").gameObject.GetComponent<Light>().intensity = 0.0f;
            
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (collider.gameObject.transform.tag == "Keypad")
         {
             onTrigger = true;
@@ -206,10 +226,40 @@ public class PlayerBehaviour : MonoBehaviour
 
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (collider.gameObject.transform.tag == "Crawler")
+
+        {
+            if (collider.gameObject.name == "Death") {
+                crawler.GetComponent<Animator>().SetBool("Attack", true);
+                inEnemyArea = true;
+            }
+            //Script AI Changes
+            crawlerAI.GetComponent<Patrol>().enabled = false;
+            crawlerAI.GetComponent<AIDestinationSetter>().enabled = true;
+            crawlerAI.GetComponent<AIPath>().maxSpeed = 12;
+
+            // Animation Changes
+            crawler.GetComponent<Animator>().SetBool("Aware", true);
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
     }
     private void OnTriggerExit(Collider collider)
     {
-        // remove noise sound
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (collider.gameObject.transform.tag == "Crawler")
+        {
+            if (collider.gameObject.name == "Death")
+            {
+                crawler.GetComponent<Animator>().SetBool("Attack", false);
+                inEnemyArea = false;
+            }
+
+            StartCoroutine(waiter());
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (collider.gameObject.transform.tag == "Zombie")
         {
             if (health > 0 && paused == false)
@@ -217,19 +267,19 @@ public class PlayerBehaviour : MonoBehaviour
                 this.GetComponent<AudioSource>().clip = null;
                 this.GetComponent<AudioSource>().loop = false;
                 inEnemyArea = false;
+
+                zombie.GetComponent<Animator>().SetBool("Attack", false);
+                zombie.GetComponent<Animator>().SetBool("Walk", true);
             }
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (collider.gameObject.transform.tag == "Keypad")
         {
             onTrigger = false;
             keypadScreen = false;
             input = "";
         }
-
-        // disable UI
-        if (collider.gameObject.transform.tag == "Page")
-            pickUpUI.SetActive(false);
     }
 
     void OnGUI()
@@ -301,3 +351,4 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 }
+

@@ -274,15 +274,16 @@ namespace Pathfinding {
 			// This is used for object pooling to reduce allocations.
 			p.Claim(this);
 
-			// Path couldn't be calculated of some reason.
-			// More info in p.errorLog (debug string)
-			if (p.error) {
-				p.Release(this);
-				return;
-			}
+            // Path couldn't be calculated of some reason.
+            // More info in p.errorLog (debug string)
+            if (p.error)
+            {
+                p.Release(this);
+                return;
+            }
 
-			// Release the previous path.
-			if (path != null) path.Release(this);
+            // Release the previous path.
+            if (path != null) path.Release(this);
 
 			// Replace the old path
 			path = p;

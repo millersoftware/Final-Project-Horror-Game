@@ -23,7 +23,7 @@ namespace Pathfinding {
 		/// Deprecated: Use <see cref="maxSpeed"/> instead
 		/// </summary>
 		[System.Obsolete("This member has been deprecated. Use 'maxSpeed' instead. [AstarUpgradable: 'speed' -> 'maxSpeed']")]
-		public float speed { get { return maxSpeed; } set { maxSpeed = value; } }
+		public float MaxSpeed { get { return maxSpeed; } set { maxSpeed = value; } }
 
 		/// <summary>
 		/// Direction that the agent wants to move in (excluding physics and local avoidance).

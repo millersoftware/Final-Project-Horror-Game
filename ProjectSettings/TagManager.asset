@@ -10,6 +10,7 @@ TagManager:
   - Scarecrow
   - JumpScare
   - Zombie
+  - Crawler
   layers:
   - Default
   - TransparentFX
