@@ -113,13 +113,11 @@ public class PlayerBehaviour : MonoBehaviour
             Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 0.0f;
         }
 
-
         //animations
         if (Input.GetKey(KeyCode.LeftShift))
             this.gameObject.GetComponent<Animation>().CrossFade("Run", 1);
         else
             this.gameObject.GetComponent<Animation>().CrossFade("Idle", 1);
-
 
         // makes mouse visible when near keypad
         if (onTrigger == true)
@@ -302,47 +300,65 @@ public class PlayerBehaviour : MonoBehaviour
                 GUI.Box(new Rect(0, 0, 320, 455), "");
                 GUI.Box(new Rect(5, 5, 310, 25), input);
 
-                if (GUI.Button(new Rect(5, 35, 100, 100), "1"))
+                if (GUI.Button(new Rect(5, 35, 100, 100), "1") 
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Alpha1 
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Keypad1)
                 {
                     input = input + "1";
                 }
 
-                if (GUI.Button(new Rect(110, 35, 100, 100), "2"))
+                if (GUI.Button(new Rect(110, 35, 100, 100), "2") 
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Alpha2
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Keypad2)
                 {
                     input = input + "2";
                 }
 
-                if (GUI.Button(new Rect(215, 35, 100, 100), "3"))
+                if (GUI.Button(new Rect(215, 35, 100, 100), "3") 
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Alpha3
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Keypad3)
                 {
                     input = input + "3";
                 }
 
-                if (GUI.Button(new Rect(5, 140, 100, 100), "4"))
+                if (GUI.Button(new Rect(5, 140, 100, 100), "4") 
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Alpha4
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Keypad4)
                 {
                     input = input + "4";
                 }
 
-                if (GUI.Button(new Rect(110, 140, 100, 100), "5"))
+                if (GUI.Button(new Rect(110, 140, 100, 100), "5") 
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Alpha5
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Keypad5)
                 {
                     input = input + "5";
                 }
 
-                if (GUI.Button(new Rect(215, 140, 100, 100), "6"))
+                if (GUI.Button(new Rect(215, 140, 100, 100), "6") 
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Alpha6
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Keypad6)
                 {
                     input = input + "6";
                 }
 
-                if (GUI.Button(new Rect(5, 245, 100, 100), "7"))
+                if (GUI.Button(new Rect(5, 245, 100, 100), "7") 
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Alpha7
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Keypad7)
                 {
                     input = input + "7";
                 }
 
-                if (GUI.Button(new Rect(110, 245, 100, 100), "8"))
+                if (GUI.Button(new Rect(110, 245, 100, 100), "8") 
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Alpha8
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Keypad8)
                 {
                     input = input + "8";
                 }
 
-                if (GUI.Button(new Rect(215, 245, 100, 100), "9"))
+                if (GUI.Button(new Rect(215, 245, 100, 100), "9") 
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Alpha9
+                    || Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Keypad9)
                 {
                     input = input + "9";
                 }
