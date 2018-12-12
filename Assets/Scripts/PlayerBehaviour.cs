@@ -16,6 +16,7 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject door;
     public bool doorOpen;
     public GameObject lightJumpScare;
+    public FirstPersonController firstPersonController;
 
     public GameObject zombie;
     public GameObject scarecrow; 
@@ -23,6 +24,11 @@ public class PlayerBehaviour : MonoBehaviour
     //Crawler Information
     public GameObject crawlerAI;
     public GameObject crawler;
+
+    [Header("Stamina Settings")]
+    public GameObject staminaSlider;
+    public float stamina = 100;
+    public float staminaMax = 100;
 
     [Header("Health Settings")]
     public GameObject healthSlider;
@@ -56,6 +62,10 @@ public class PlayerBehaviour : MonoBehaviour
         // set initial health values
         health = healthMax;
         battery = batteryMax;
+        stamina = staminaMax;
+
+        staminaSlider.GetComponent<Slider>().maxValue = staminaMax;
+        staminaSlider.GetComponent<Slider>().value = staminaMax;
 
         healthSlider.GetComponent<Slider>().maxValue = healthMax;
         healthSlider.GetComponent<Slider>().value = healthMax;
@@ -66,11 +76,25 @@ public class PlayerBehaviour : MonoBehaviour
 
         // start consume flashlight battery
         StartCoroutine(RemoveBaterryCharge(removeBatteryValue, secondToRemoveBaterry));
+
+        firstPersonController = GetComponent<FirstPersonController>();
     }
 
     void Update()
     {
-        
+        if (!firstPersonController.m_IsWalking)
+        {
+            stamina -= 0.2f;
+        }
+        else if (firstPersonController.tired == false)
+        {
+            stamina += 0.1f;
+        }
+
+        if ( stamina > staminaMax)
+            stamina = staminaMax;
+            
+
         if (inEnemyArea == true)
         {
             health -= 0.1f;
@@ -78,6 +102,9 @@ public class PlayerBehaviour : MonoBehaviour
 
         // update player health slider
         healthSlider.GetComponent<Slider>().value = health;
+
+        // update player stamina slider
+        staminaSlider.GetComponent<Slider>().value = stamina;
 
         // update baterry slider
         batterySlider.GetComponent<Slider>().value = battery;
@@ -112,6 +139,13 @@ public class PlayerBehaviour : MonoBehaviour
         {
             battery = 0.00f;
             Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 0.0f;
+        }
+
+        // if out of stamina
+        if (stamina / staminaMax * 100 <= 0)
+        {
+            if (stamina <= 0.00f) stamina = 0.01f;
+            firstPersonController.tired = true;
         }
 
         //animations
