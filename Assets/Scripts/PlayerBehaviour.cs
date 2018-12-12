@@ -18,6 +18,7 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject lightJumpScare;
 
     public GameObject zombie;
+    public GameObject scarecrow; 
 
     //Crawler Information
     public GameObject crawlerAI;
@@ -190,8 +191,14 @@ public class PlayerBehaviour : MonoBehaviour
         crawler.GetComponent<Animator>().SetBool("Aware", false);
     }
 
+    public IEnumerator wait(float temp)
+    {
+        yield return new WaitForSeconds(3);
+        Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = temp;
+        scarecrow.SetActive(false);
+    }
 
-    private void OnTriggerEnter(Collider collider)
+        private void OnTriggerEnter(Collider collider)
     {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (collider.gameObject.transform.tag == "Zombie")
@@ -213,7 +220,15 @@ public class PlayerBehaviour : MonoBehaviour
             this.GetComponent<AudioSource>().PlayOneShot(Noise);
             lightJumpScare.transform.Find("Area Light 1").gameObject.GetComponent<Light>().intensity = 0.0f;
             lightJumpScare.transform.Find("Area Light 2").gameObject.GetComponent<Light>().intensity = 0.0f;
-           
+
+            //Turn off flashlight
+            float temp = Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity;
+            Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = 0.0f;
+            StartCoroutine(wait(temp));
+
+            //spawn scarecrow
+            scarecrow.SetActive(true);
+            Destroy(collider);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
