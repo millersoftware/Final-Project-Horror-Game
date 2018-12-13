@@ -57,8 +57,22 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject finishedGameUI;
     public bool paused;
 
+    private int idols;
+    public GameObject endGate1;
+    public GameObject endGate2;
+    public GameObject ending;
+
+    public GameObject objectiveText;
+    public GameObject goalText;
+
     void Start()
     {
+        idols = 0;
+        ending.SetActive(false);
+
+        objectiveText.SetActive(false);
+        goalText.SetActive(false);
+
         // set initial health values
         health = healthMax;
         battery = batteryMax;
@@ -165,6 +179,19 @@ public class PlayerBehaviour : MonoBehaviour
             doorOpen = true;
             door = GameObject.Find("Door");
             Destroy(door);
+            input = "";
+            objectiveText.SetActive(true);
+            Invoke("textHider", 5f);
+        }
+
+        if (idols == 6)
+        {
+            Destroy(endGate1);
+            Destroy(endGate2);
+            ending.SetActive(true);
+            objectiveText.SetActive(true);
+            idols = 0;
+            Invoke("textHider", 5f);
         }
     }
 
@@ -225,7 +252,25 @@ public class PlayerBehaviour : MonoBehaviour
         crawler.GetComponent<Animator>().SetBool("Aware", false);
     }
 
-    public IEnumerator wait(float temp)
+    public void idolAdder()
+    {
+        idols += 1;
+    }
+
+    public void textHider()
+    {
+        if (objectiveText.activeSelf == true)
+        {
+            objectiveText.SetActive(false);
+        }
+        if (goalText.activeSelf == true)
+        {
+            goalText.SetActive(false);
+        }
+    }
+
+
+        public IEnumerator wait(float temp)
     {
         yield return new WaitForSeconds(3);
         Flashlight.transform.Find("Spotlight").gameObject.GetComponent<Light>().intensity = temp;
@@ -248,8 +293,8 @@ public class PlayerBehaviour : MonoBehaviour
             }
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (collider.gameObject.transform.tag == "JumpScare")
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            if (collider.gameObject.transform.tag == "JumpScare")
         {
             this.GetComponent<AudioSource>().PlayOneShot(Noise);
             lightJumpScare.transform.Find("Area Light 1").gameObject.GetComponent<Light>().intensity = 0.0f;
@@ -272,6 +317,7 @@ public class PlayerBehaviour : MonoBehaviour
             Cursor.visible = true;
 
         }
+
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (collider.gameObject.transform.tag == "Crawler")

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PickupHealth : MonoBehaviour
 {
-    [Header("Battery System Settings")]
+    [Header("Health System Settings")]
     public GameObject Player;
     public float healthValue;
 
@@ -22,7 +22,7 @@ public class PickupHealth : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
-                Debug.Log("You get this battery: " + collider.gameObject.name);
+                Debug.Log("You get this healthpack: " + collider.gameObject.name);
 
                 // disable UI
                 collider.gameObject.GetComponent<PlayerBehaviour>().pickUpUI.SetActive(false);
