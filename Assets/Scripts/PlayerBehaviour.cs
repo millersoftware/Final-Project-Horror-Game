@@ -49,6 +49,8 @@ public class PlayerBehaviour : MonoBehaviour
     [Header("Audio Settings")]
     public AudioClip Noise;
     public AudioClip zombieNoise;
+    public AudioClip crawlerNoise;
+    public bool isPlaying = false;
 
 
     [Header("UI Settings")]
@@ -246,6 +248,8 @@ public class PlayerBehaviour : MonoBehaviour
     public IEnumerator waiter()
     {
         yield return new WaitForSeconds(10);
+        this.GetComponent<AudioSource>().Stop();
+        isPlaying = false;
         crawlerAI.GetComponent<Patrol>().enabled = true;
         crawlerAI.GetComponent<AIDestinationSetter>().enabled = false;
         crawlerAI.GetComponent<AIPath>().maxSpeed = 8;
@@ -332,6 +336,14 @@ public class PlayerBehaviour : MonoBehaviour
             crawlerAI.GetComponent<AIDestinationSetter>().enabled = true;
             crawlerAI.GetComponent<AIPath>().maxSpeed = 11;
 
+            // Music
+            if (isPlaying == false)
+            {
+                this.GetComponent<AudioSource>().PlayOneShot(crawlerNoise);
+                isPlaying = true;
+            }
+            
+
             // Animation Changes
             crawler.GetComponent<Animator>().SetBool("Aware", true);
         }
@@ -363,6 +375,8 @@ public class PlayerBehaviour : MonoBehaviour
 
                 zombie.GetComponent<Animator>().SetBool("Attack", false);
                 zombie.GetComponent<Animator>().SetBool("Walk", true);
+
+                this.GetComponent<AudioSource>().Stop();
             }
         }
 
