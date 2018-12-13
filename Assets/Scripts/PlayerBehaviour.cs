@@ -191,7 +191,7 @@ public class PlayerBehaviour : MonoBehaviour
             Destroy(endGate1);
             Destroy(endGate2);
             ending.SetActive(true);
-            objectiveText.SetActive(true);
+            goalText.SetActive(true);
             idols = 0;
             Invoke("textHider", 5f);
         }
