@@ -330,7 +330,7 @@ public class PlayerBehaviour : MonoBehaviour
             //Script AI Changes
             crawlerAI.GetComponent<Patrol>().enabled = false;
             crawlerAI.GetComponent<AIDestinationSetter>().enabled = true;
-            crawlerAI.GetComponent<AIPath>().maxSpeed = 12;
+            crawlerAI.GetComponent<AIPath>().maxSpeed = 11;
 
             // Animation Changes
             crawler.GetComponent<Animator>().SetBool("Aware", true);
